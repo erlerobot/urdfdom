@@ -21,6 +21,15 @@ class TestURDFParser(unittest.TestCase):
         rewritten = minidom.parseString(robot.to_xml_string())
         self.assertTrue(xml_matches(xml, rewritten))
 
+
+    def test_empty_robot(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="only_robot">
+
+</robot>'''
+        self.parse_and_compare(xml)
+
+
     def test_new_transmission(self):
         xml = '''<?xml version="1.0"?>
 <robot name="test">
