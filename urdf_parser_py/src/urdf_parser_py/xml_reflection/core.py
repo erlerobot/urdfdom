@@ -81,7 +81,7 @@ def make_type(cur_type):
 		return ListType()
 	elif issubclass(cur_type, Object):
 		return ObjectType(cur_type)
-	elif cur_type in [str, float]:
+	elif cur_type in [str, float, int]:
 		return BasicType(cur_type)
 	else:
 		raise Exception("Invalid type: {}".format(cur_type))
@@ -540,8 +540,10 @@ class Object(YamlReflection):
 # Better name: element_with_name? Attributed element?
 add_type('element_name', SimpleElementType('name', str))
 add_type('element_value', SimpleElementType('value', float))
+add_type('element_pixels', SimpleElementType('pixels', int))
 
 # Add in common vector types so they aren't absorbed into the namespaces
 get_type('vector3')
 get_type('vector4')
 get_type('vector6')
+print(get_type(int))
