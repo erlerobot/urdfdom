@@ -28,6 +28,58 @@ class TestURDFParser(unittest.TestCase):
         rewritten = minidom.parseString(robot.to_xml_string())
         self.assertTrue(xml_matches(xml, rewritten))
 
+    def test_robot_comm_cog_and_sens(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="my_robot">
+  <cognition name="robot_brain">
+    <parent link="link1"/>
+  </cognition>
+  
+  <communication name="comm_node">
+    <parent link="link1"/>
+  </communication>
+
+  <sensor name="my_sensor" type="IMU" rate="50.0">
+    <parent link="link1"/>
+    <origin xyz="0.0 0.0 1.0" rpy="0.0 0.0 3.1416"/>
+    <camera>
+      <image width="620" height="620" format="rgb8"/>
+    </camera>    
+    <imu>
+      <gyroscopes>0.0 0.0 1.0</gyroscopes>
+      <accelerometers>1.0 0.5 1.0</accelerometers>
+    </imu>
+  </sensor>
+
+   <joint name="my_joint" type="floating">
+      <origin xyz="0.0 0.0 1.0" rpy="0.0 0.0 3.1416"/>
+      <parent link="link1"/>
+      <child link="link2"/>
+   </joint>
+
+</robot>'''
+        self.parse(xml)        
+
+
+    def test_communication(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="my_robot">
+  <communication name="comm_node">
+    <parent link="link1"/>
+  </communication>
+</robot>'''
+        self.parse(xml)        
+
+
+    def test_cognition(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="my_robot">
+  <cognition name="robot_brain">
+    <parent link="link1"/>
+  </cognition>
+</robot>'''
+        self.parse(xml)        
+
 
     def test_simple_sensor(self):
         xml = '''<?xml version="1.0"?>
@@ -44,7 +96,8 @@ class TestURDFParser(unittest.TestCase):
     </imu>
   </sensor>
 </robot>'''
-        self.parse_print_and_compare(xml)        
+        # self.parse_print_and_compare(xml)
+        self.parse_and_compare(xml)        
 
     def test_empty_joint(self):
         xml = '''<?xml version="1.0"?>

@@ -462,6 +462,32 @@ xmlr.reflect(Sensor, params = [
 	xmlr.Element('imu', IMU, False)
 	])
 
+class Cognition(xmlr.Object):
+	def __init__(self, name=None, parent=None):
+		self.name = name
+		self.parent = parent
+
+	def check_valid(self):
+		pass
+
+xmlr.reflect(Cognition, params = [
+	name_attribute,
+	xmlr.Element('parent', 'element_link')
+	])
+
+class Communication(xmlr.Object):
+	def __init__(self, name=None, parent=None):
+		self.name = name
+		self.parent = parent
+
+	def check_valid(self):
+		pass
+
+xmlr.reflect(Communication, params = [
+	name_attribute,
+	xmlr.Element('parent', 'element_link')
+	])
+
 class Robot(xmlr.Object):
 	def __init__(self, name = None):
 		self.aggregate_init()
@@ -470,6 +496,9 @@ class Robot(xmlr.Object):
 		self.joints = []
 		self.links = []
 		self.sensors = []
+		self.cognitions = []
+		self.communications = []
+
 		self.materials = []
 		self.gazebos = []
 		self.transmissions = []
@@ -480,6 +509,7 @@ class Robot(xmlr.Object):
 		self.parent_map = {}
 		self.child_map = {}
 	
+
 	def add_aggregate(self, typeName, elem):
 		xmlr.Object.add_aggregate(self, typeName, elem)
 		
@@ -496,6 +526,10 @@ class Robot(xmlr.Object):
 			self.link_map[link.name] = link
 		elif typeName == 'sensor':
 			sensor = elem
+		elif typeName == 'cognition':
+			cognition = elem
+		elif typeName == 'communication':
+			cognition = elem
 
 	def add_link(self, link):
 		self.add_aggregate('link', link)
@@ -553,10 +587,22 @@ class Robot(xmlr.Object):
 		for l in self.links:
 			output += "- "+str(l.name)+"\n"
 			# TODO print also the rest of the elements of the link
+		
 		output += "Joints:\n"
 		for j in self.joints:
 			output += "* "+str(j.name)+"\n"
 			# TODO print also the rest of the elements of the joint
+		
+		output += "Cognition:\n"
+		for brain in self.cognitions:
+			output += "   name: "+str(brain.name)+"\n"
+			output += "   parent: "+str(brain.parent)+"\n"
+		
+		output += "Communication:\n"
+		for comm in self.communications:
+			output += "   name: "+str(comm.name)+"\n"
+			output += "   parent: "+str(comm.parent)+"\n"
+
 		output += "Sensors:\n"		
 		for s in self.sensors:
 			output += "* "+str(s.name)+"\n"
@@ -590,6 +636,8 @@ xmlr.reflect(Robot, tag = 'robot', params = [
 	xmlr.AggregateElement('link', Link),
 	xmlr.AggregateElement('joint', Joint),
 	xmlr.AggregateElement('sensor', Sensor),
+	xmlr.AggregateElement('cognition', Cognition),
+	xmlr.AggregateElement('communication', Communication),	
 	xmlr.AggregateElement('gazebo', xmlr.RawType()),
 	xmlr.AggregateElement('transmission', 'transmission'),
 	xmlr.AggregateElement('material', Material)
