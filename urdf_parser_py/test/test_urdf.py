@@ -21,14 +21,33 @@ class TestURDFParser(unittest.TestCase):
         rewritten = minidom.parseString(robot.to_xml_string())
         self.assertTrue(xml_matches(xml, rewritten))
 
+    def parse_print_and_compare(self, orig):
+        xml = minidom.parseString(orig)
+        robot = urdf.Robot.from_xml_string(orig)
+        print(robot.to_str())
+        rewritten = minidom.parseString(robot.to_xml_string())
+        self.assertTrue(xml_matches(xml, rewritten))
+
+
+    def test_simple_sensor(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="sensor_robot">
+  <sensor name="my_sensor" type="IMU" rate="50.0">
+    <parent link="link1"/>
+  </sensor>
+</robot>'''
+        self.parse_print_and_compare(xml)        
 
     def test_empty_joint(self):
         xml = '''<?xml version="1.0"?>
 <robot name="only_robot">
    <joint name="my_joint" type="floating">
+      <origin xyz="0 0 1" rpy="0 0 3.1416"/>
+      <parent link="link1"/>
+      <child link="link2"/>
    </joint>
 </robot>'''
-        self.parse_and_compare(xml)
+        self.parse(xml)
 
 
     def test_simple_joint(self):
@@ -46,7 +65,7 @@ class TestURDFParser(unittest.TestCase):
       <safety_controller k_velocity="10" k_position="15" soft_lower_limit="-2.0" soft_upper_limit="0.5" />
    </joint>
 </robot>'''
-        self.parse_and_compare(xml)
+        self.parse(xml)
 
     def test_simple_link(self):
         xml = '''<?xml version="1.0"?>
@@ -76,7 +95,7 @@ class TestURDFParser(unittest.TestCase):
    </collision>
  </link>
 </robot>'''
-        self.parse_and_compare(xml)
+        self.parse(xml)
 
     def test_empty_robot(self):
         xml = '''<?xml version="1.0"?>
