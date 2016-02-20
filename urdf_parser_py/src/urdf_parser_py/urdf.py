@@ -395,6 +395,73 @@ xmlr.reflect(Transmission, tag = 'new_transmission', params = [
 
 xmlr.add_type('transmission', xmlr.DuckTypedFactory('transmission', [Transmission, PR2Transmission]))
 
+
+class Image(xmlr.Object):
+
+	def __init__(self, width=None, height=None, format=None, hfov=None, near=None, far=None):
+		self.width = width # pixels, integer
+		self.height = height # pixels, integer
+		self.format = format # string, select one from https://goo.gl/8OR1t3
+		self.hfov = hfov # radians, float, horizontal field of view
+		self.near = near # meters, float, near clip distance of the camera in meters
+		self.far = far # meters, float, far clip distance of the camera in meters
+	
+	def check_valid(self):
+		pass
+	
+xmlr.reflect(Image, params = [
+	xmlr.Attribute('width', int, True),
+	xmlr.Attribute('height', int, True),
+	xmlr.Attribute('format', str
+		, True),
+	xmlr.Attribute('hfov', float, False),
+	xmlr.Attribute('near', float, False),
+	xmlr.Attribute('far', float, False)
+	])
+
+class Camera(xmlr.Object):
+	def __init__(self, image=None):
+		self.image = origin
+
+xmlr.reflect(Camera, params = [
+	xmlr.Element('image', Image, True)
+	])
+
+class IMU(xmlr.Object):
+	def __init__(self, gyroscopes=None, accelerometers=None):
+		self.gyroscopes = gyroscopes
+		self.accelerometers = accelerometers
+
+
+xmlr.reflect(IMU, params = [
+	xmlr.Element('gyroscopes', 'vector3', True),
+	xmlr.Element('accelerometers', 'vector3', True)	
+	])
+
+class Sensor(xmlr.Object):
+	def __init__(self, name=None, type=None, rate=None, parent=None, origin=None, camera=None, imu=None):
+		self.name = name
+		self.type = type
+		self.rate = rate
+		self.parent = parent
+		self.origin = origin
+		self.camera = camera		
+		self.imu = imu
+
+	def check_valid(self):
+		pass
+
+xmlr.reflect(Sensor, params = [
+	name_attribute,
+	xmlr.Attribute('type', str, True),
+	xmlr.Attribute('rate', float, True),
+	xmlr.Element('parent', 'element_link'),	
+	origin_element,
+	# A sensor tag may contain one of many of the following sensor types
+	xmlr.Element('camera', Camera, False),
+	xmlr.Element('imu', IMU, False)
+	])
+
 class Robot(xmlr.Object):
 	def __init__(self, name = None):
 		self.aggregate_init()
@@ -402,6 +469,7 @@ class Robot(xmlr.Object):
 		self.name = name
 		self.joints = []
 		self.links = []
+		self.sensors = []
 		self.materials = []
 		self.gazebos = []
 		self.transmissions = []
@@ -426,12 +494,17 @@ class Robot(xmlr.Object):
 		elif typeName == 'link':
 			link = elem
 			self.link_map[link.name] = link
+		elif typeName == 'sensor':
+			sensor = elem
 
 	def add_link(self, link):
 		self.add_aggregate('link', link)
 
 	def add_joint(self, joint):
 		self.add_aggregate('joint', joint)
+
+	def add_sensor(self, sensor):
+		self.add_aggregate('sensor', sensor)
 
 	def get_chain(self, root, tip, joints=True, links=True, fixed=True):
 		chain = []
@@ -484,12 +557,17 @@ class Robot(xmlr.Object):
 		for j in self.joints:
 			output += "* "+str(j.name)+"\n"
 			# TODO print also the rest of the elements of the joint
+		output += "Sensors:\n"		
+		for s in self.sensors:
+			output += "* "+str(s.name)+"\n"
+			# TODO print also the rest of the elements of the sensor
 		return output
 	
 xmlr.reflect(Robot, tag = 'robot', params = [
 	xmlr.Attribute('name', str, False), # Is 'name' a required attribute?
 	xmlr.AggregateElement('link', Link),
 	xmlr.AggregateElement('joint', Joint),
+	xmlr.AggregateElement('sensor', Sensor),
 	xmlr.AggregateElement('gazebo', xmlr.RawType()),
 	xmlr.AggregateElement('transmission', 'transmission'),
 	xmlr.AggregateElement('material', Material)
