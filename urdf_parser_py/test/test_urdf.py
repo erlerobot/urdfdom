@@ -34,6 +34,14 @@ class TestURDFParser(unittest.TestCase):
 <robot name="sensor_robot">
   <sensor name="my_sensor" type="IMU" rate="50.0">
     <parent link="link1"/>
+    <origin xyz="0.0 0.0 1.0" rpy="0.0 0.0 3.1416"/>
+    <camera>
+      <image width="620" height="620" format="rgb8"/>
+    </camera>    
+    <imu>
+      <gyroscopes>0.0 0.0 1.0</gyroscopes>
+      <accelerometers>1.0 0.5 1.0</accelerometers>
+    </imu>
   </sensor>
 </robot>'''
         self.parse_print_and_compare(xml)        

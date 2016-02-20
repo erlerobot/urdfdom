@@ -421,7 +421,7 @@ xmlr.reflect(Image, params = [
 
 class Camera(xmlr.Object):
 	def __init__(self, image=None):
-		self.image = origin
+		self.image = image
 
 xmlr.reflect(Camera, params = [
 	xmlr.Element('image', Image, True)
@@ -560,6 +560,28 @@ class Robot(xmlr.Object):
 		output += "Sensors:\n"		
 		for s in self.sensors:
 			output += "* "+str(s.name)+"\n"
+			output += "   type: "+s.type+"\n"
+			output += "   rate: "+str(s.rate)+"\n"
+			output += "   parent: "+str(s.parent)+"\n"
+			if s.origin:
+				output += "   origin: "+str(s.origin)+"\n"
+			if s.camera:
+				output += "   Camera:\n"
+				output += "      Image:\n"
+				output += "         width: "+str(s.camera.image.width)+"\n"
+				output += "         height: "+str(s.camera.image.height)+"\n"
+				output += "         format: "+str(s.camera.image.format)+"\n"
+				if s.camera.image.hfov:			
+					output += "         hfov: "+str(s.camera.image.hfov)+"\n"
+				if s.camera.image.near:
+					output += "         near: "+str(s.camera.image.near)+"\n"
+				if s.camera.image.far:
+					output += "         far: "+str(s.camera.image.far)+"\n"
+			if s.imu:
+				output += "   IMU:\n"
+				output += "      accelerometers: "+str(s.imu.accelerometers)+"\n"
+				output += "      gyroscopes: "+str(s.imu.gyroscopes)+"\n"
+
 			# TODO print also the rest of the elements of the sensor
 		return output
 	
