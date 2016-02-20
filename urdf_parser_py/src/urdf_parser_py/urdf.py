@@ -469,6 +469,22 @@ class Robot(xmlr.Object):
 		# Could move this into xml_reflection
 		import rospy
 		return cls.from_xml_string(rospy.get_param(key))
+
+	def to_str(self, verbose=True):
+		"""
+		Provide a simple string representation of the class		
+		"""		
+		output = ""
+		output += "Robot: "+str(self.name)+"\n"		
+		output += "Links:\n"
+		for l in self.links:
+			output += "- "+str(l.name)+"\n"
+			# TODO print also the rest of the elements of the link
+		output += "Joints:\n"
+		for j in self.joints:
+			output += "* "+str(j.name)+"\n"
+			# TODO print also the rest of the elements of the joint
+		return output
 	
 xmlr.reflect(Robot, tag = 'robot', params = [
 	xmlr.Attribute('name', str, False), # Is 'name' a required attribute?
