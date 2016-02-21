@@ -28,6 +28,48 @@ class TestURDFParser(unittest.TestCase):
         rewritten = minidom.parseString(robot.to_xml_string())
         self.assertTrue(xml_matches(xml, rewritten))
 
+    def test_remove(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="my_robot">
+  <cognition name="robot_brain">
+    <parent link="link1"/>
+  </cognition>
+  
+  <communication name="comm_node">
+    <parent link="link1"/>
+  </communication>
+
+</robot>'''
+        robot = self.parse(xml)
+        #print(robot.to_xml_string())
+        robot.remove_communication("comm_node")
+        robot.remove_cognition("robot_brain")
+        #print("////////////////////")
+        #print(robot.to_xml_string())
+        #print(str(robot.communication_map))
+        #print(str(robot.cognition_map))
+
+
+    def test_add_sensor(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="my_robot">
+  <cognition name="robot_brain">
+    <parent link="link1"/>
+  </cognition>
+  
+  <communication name="comm_node">
+    <parent link="link1"/>
+  </communication>
+
+</robot>'''
+        robot = self.parse(xml)
+        #print(robot.to_xml_string())
+        sensor = urdf.Sensor()
+        sensor.__init__("my_new_dyn_sensor","IMU", 10.6, "link1")
+        #print("////////////////////")
+        robot.add_sensor(sensor)
+        #print(robot.to_xml_string())
+
     def test_robot_comm_cog_and_sens(self):
         xml = '''<?xml version="1.0"?>
 <robot name="my_robot">
@@ -58,8 +100,7 @@ class TestURDFParser(unittest.TestCase):
    </joint>
 
 </robot>'''
-        self.parse(xml)        
-
+        self.parse(xml)
 
     def test_communication(self):
         xml = '''<?xml version="1.0"?>

@@ -505,6 +505,9 @@ class Robot(xmlr.Object):
 		
 		self.joint_map = {}
 		self.link_map = {}
+		self.cognition_map = {}
+		self.sensors_map = {}
+		self.communication_map = {}
 
 		self.parent_map = {}
 		self.child_map = {}
@@ -526,10 +529,47 @@ class Robot(xmlr.Object):
 			self.link_map[link.name] = link
 		elif typeName == 'sensor':
 			sensor = elem
+			self.sensors_map[sensor.name] = sensor
 		elif typeName == 'cognition':
 			cognition = elem
+			self.cognition_map[cognition.name] = cognition
 		elif typeName == 'communication':
+			communication = elem
+			self.communication_map[communication.name] = communication
+
+	def element_from_name(self, typeName, element_name):
+		if typeName == 'joint':
+			return self.joint_map[element_name]
+		elif typeName == 'link':
+			return self.link_map[element_name]
+		elif typeName == 'sensor':
+			return self.sensors_map[element_name]
+		elif typeName == 'cognition':
+			return self.cognition_map[element_name]
+		elif typeName == 'communication':
+			return self.communication_map[element_name]
+		else:
+			print("Sorry but we can't return that element\n")
+
+	def remove_aggregate(self, typeName, elem_name):
+		elem = self.element_from_name(typeName, elem_name)
+		xmlr.Object.remove_aggregate(self, elem)
+		
+		if typeName == 'joint':
+			joint = elem
+			self.joint_map.pop(joint.name, None)
+		elif typeName == 'link':
+			link = elem
+			self.link_map.pop(link.name, None)
+		elif typeName == 'sensor':
+			sensor = elem
+			self.sensors_map.pop(sensor.name, None)
+		elif typeName == 'cognition':
 			cognition = elem
+			self.cognition_map.pop(cognition.name, None)
+		elif typeName == 'communication':
+			communication = elem
+			self.communication_map.pop(communication.name, None)						
 
 	def add_link(self, link):
 		self.add_aggregate('link', link)
@@ -539,6 +579,28 @@ class Robot(xmlr.Object):
 
 	def add_sensor(self, sensor):
 		self.add_aggregate('sensor', sensor)
+
+	def add_cognition(self, cognition):
+		self.add_aggregate('cognition', cognition)
+
+	def add_communication(self, communication):
+		self.add_aggregate('communication', communication)
+
+	def remove_link(self, link_name):
+		self.remove_aggregate('link', link_name)
+
+	def remove_joint(self, joint_name):
+		self.remove_aggregate('joint', joint_name)
+
+	def remove_sensor(self, sensor_name):
+		self.remove_aggregate('sensor', sensor_name)
+
+	def remove_cognition(self, cognition_name):
+		self.remove_aggregate('cognition', cognition_name)
+
+	def remove_communication(self, communication_name):
+		self.remove_aggregate('communication', communication_name)
+
 
 	def get_chain(self, root, tip, joints=True, links=True, fixed=True):
 		chain = []
@@ -604,6 +666,7 @@ class Robot(xmlr.Object):
 			output += "   parent: "+str(comm.parent)+"\n"
 
 		output += "Sensors:\n"		
+
 		for s in self.sensors:
 			output += "* "+str(s.name)+"\n"
 			output += "   type: "+s.type+"\n"
@@ -628,7 +691,6 @@ class Robot(xmlr.Object):
 				output += "      accelerometers: "+str(s.imu.accelerometers)+"\n"
 				output += "      gyroscopes: "+str(s.imu.gyroscopes)+"\n"
 
-			# TODO print also the rest of the elements of the sensor
 		return output
 	
 xmlr.reflect(Robot, tag = 'robot', params = [
