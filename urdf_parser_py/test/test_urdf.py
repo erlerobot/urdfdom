@@ -28,6 +28,26 @@ class TestURDFParser(unittest.TestCase):
         rewritten = minidom.parseString(robot.to_xml_string())
         self.assertTrue(xml_matches(xml, rewritten))
 
+
+    def test_change_link(self):
+        xml = '''<?xml version="1.0"?>
+<robot name="my_robot">
+  <cognition name="robot_brain">
+    <parent link="link1"/>
+  </cognition>
+  
+  <communication name="comm_node">
+    <parent link="link1"/>
+  </communication>
+
+</robot>'''
+        robot = self.parse(xml)
+        # print(robot.to_xml_string())
+        elem = robot.element_from_name("communication","comm_node")
+        elem.change_link("link2")
+        # print("////////////////////")
+        # print(robot.to_xml_string())
+
     def test_remove(self):
         xml = '''<?xml version="1.0"?>
 <robot name="my_robot">

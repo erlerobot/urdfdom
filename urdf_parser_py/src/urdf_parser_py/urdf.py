@@ -293,6 +293,12 @@ class Joint(xmlr.Object):
 	
 	def check_valid(self):
 		assert self.type in self.TYPES, "Invalid joint type: {}".format(self.type)
+
+	def change_parent_link(self, new_link):
+		self.parent = new_link
+
+	def change_child_link(self, new_link):
+		self.child = new_link
 	
 	# Aliases
 	@property
@@ -443,13 +449,16 @@ class Sensor(xmlr.Object):
 		self.name = name
 		self.type = type
 		self.rate = rate
-		self.parent = parent
+		self.parent = parent # represents the link this component belongs to
 		self.origin = origin
 		self.camera = camera		
 		self.imu = imu
 
 	def check_valid(self):
 		pass
+
+	def change_link(self, new_link):
+		self.parent = new_link
 
 xmlr.reflect(Sensor, params = [
 	name_attribute,
@@ -465,10 +474,13 @@ xmlr.reflect(Sensor, params = [
 class Cognition(xmlr.Object):
 	def __init__(self, name=None, parent=None):
 		self.name = name
-		self.parent = parent
+		self.parent = parent # represents the link this component belongs to
 
 	def check_valid(self):
 		pass
+
+	def change_link(self, new_link):
+		self.parent = new_link
 
 xmlr.reflect(Cognition, params = [
 	name_attribute,
@@ -478,10 +490,13 @@ xmlr.reflect(Cognition, params = [
 class Communication(xmlr.Object):
 	def __init__(self, name=None, parent=None):
 		self.name = name
-		self.parent = parent
+		self.parent = parent # represents the link this component belongs to
 
 	def check_valid(self):
 		pass
+
+	def change_link(self, new_link):
+		self.parent = new_link
 
 xmlr.reflect(Communication, params = [
 	name_attribute,
