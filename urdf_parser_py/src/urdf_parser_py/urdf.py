@@ -444,8 +444,44 @@ xmlr.reflect(IMU, params = [
 	xmlr.Element('accelerometers', 'vector3', True)	
 	])
 
+class Ray(xmlr.Object):
+	def __init__(self, rate=None, 
+				 horizontal_samples=None, 	horizontal_resolution=None,
+				 horizontal_min_angle=None, horizontal_max_angle=None,
+				 vertical_samples=None, 	vertical_resolution=None,
+				 vertical_min_angle=None, 	vertical_max_angle=None,
+				 range_min=None,			range_max=None,
+				 range_resolution=None):
+		self.rate = rate
+		self.horizontal_samples = horizontal_samples 	
+		self.horizontal_resolution = horizontal_resolution
+		self.horizontal_min_angle = horizontal_min_angle 
+		self.horizontal_max_angle = horizontal_max_angle
+		self.vertical_samples = vertical_samples	
+		self.vertical_resolution = vertical_resolution
+		self.vertical_min_angle = vertical_min_angle 	
+		self.vertical_max_angle = vertical_max_angle
+		self.range_min = range_min	
+		self.range_max = range_max
+		self.range_resolution = range_resolution
+
+xmlr.reflect(Ray, params=[
+	xmlr.Element('rate', float, True),
+	xmlr.Element('horizontal_samples', float, True),
+	xmlr.Element('horizontal_resolution', float, True),
+	xmlr.Element('horizontal_min_angle', float, True),
+	xmlr.Element('horizontal_max_angle', float, True),
+	xmlr.Element('vertical_samples', float, True),
+	xmlr.Element('vertical_resolution', float, True),
+	xmlr.Element('vertical_min_angle', float, True),
+	xmlr.Element('vertical_max_angle', float, True),
+	xmlr.Element('range_min', float, True),
+	xmlr.Element('range_max', float, True),
+	xmlr.Element('range_resolution', float, True)
+	])
+
 class Sensor(xmlr.Object):
-	def __init__(self, name=None, type=None, rate=None, parent=None, origin=None, camera=None, imu=None):
+	def __init__(self, name=None, type=None, rate=None, parent=None, origin=None, camera=None, imu=None, ray=None):
 		self.name = name
 		self.type = type
 		self.rate = rate
@@ -453,6 +489,7 @@ class Sensor(xmlr.Object):
 		self.origin = origin
 		self.camera = camera		
 		self.imu = imu
+		self.ray = ray
 
 	def check_valid(self):
 		pass
@@ -468,7 +505,8 @@ xmlr.reflect(Sensor, params = [
 	origin_element,
 	# A sensor tag may contain one of many of the following sensor types
 	xmlr.Element('camera', Camera, False),
-	xmlr.Element('imu', IMU, False)
+	xmlr.Element('imu', IMU, False),
+	xmlr.Element('ray', Ray, False)
 	])
 
 class Cognition(xmlr.Object):
@@ -705,7 +743,23 @@ class Robot(xmlr.Object):
 				output += "   IMU:\n"
 				output += "      accelerometers: "+str(s.imu.accelerometers)+"\n"
 				output += "      gyroscopes: "+str(s.imu.gyroscopes)+"\n"
-
+			if s.ray:
+				output += "   Ray:\n"
+				output += "      update rate: " + str(s.ray.rate) + "\n"
+				output += "      horizontal: \n"
+				output += "         samples: " + str(s.ray.horizontal_samples) + "\n"
+				output += "         resolution: " + str(s.ray.horizontal_resolution) + "\n"
+				output += "         min angle: " + str(s.ray.horizontal_min_angle) + "\n"
+				output += "         max angle: " + str(s.ray.horizontal_max_angle) + "\n"
+				output += "      vertical: \n"
+				output += "         samples: " + str(s.ray.vertical_samples) + "\n"
+				output += "         resolution: " + str(s.ray.vertical_resolution) + "\n"
+				output += "         min angle: " + str(s.ray.vertical_min_angle) + "\n"
+				output += "         max angle: " + str(s.ray.vertical_max_angle) + "\n"
+				output += "      range: \n"
+				output += "         min: " + str(s.ray.range_min) + "\n"
+				output += "         max: " + str(s.ray.range_max) + "\n"
+				output += "         resolution: " + str(s.ray.resolution) + "\n"
 		return output
 	
 xmlr.reflect(Robot, tag = 'robot', params = [
