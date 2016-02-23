@@ -445,14 +445,13 @@ xmlr.reflect(IMU, params = [
 	])
 
 class Ray(xmlr.Object):
-	def __init__(self, rate=None, 
+	def __init__(self, 
 				 horizontal_samples=None, 	horizontal_resolution=None,
 				 horizontal_min_angle=None, horizontal_max_angle=None,
 				 vertical_samples=None, 	vertical_resolution=None,
 				 vertical_min_angle=None, 	vertical_max_angle=None,
 				 range_min=None,			range_max=None,
 				 range_resolution=None):
-		self.rate = rate
 		self.horizontal_samples = horizontal_samples 	
 		self.horizontal_resolution = horizontal_resolution
 		self.horizontal_min_angle = horizontal_min_angle 
@@ -466,7 +465,6 @@ class Ray(xmlr.Object):
 		self.range_resolution = range_resolution
 
 xmlr.reflect(Ray, params=[
-	xmlr.Element('rate', float, True),
 	xmlr.Element('horizontal_samples', float, True),
 	xmlr.Element('horizontal_resolution', float, True),
 	xmlr.Element('horizontal_min_angle', float, True),
@@ -745,7 +743,6 @@ class Robot(xmlr.Object):
 				output += "      gyroscopes: "+str(s.imu.gyroscopes)+"\n"
 			if s.ray:
 				output += "   Ray:\n"
-				output += "      update rate: " + str(s.ray.rate) + "\n"
 				output += "      horizontal: \n"
 				output += "         samples: " + str(s.ray.horizontal_samples) + "\n"
 				output += "         resolution: " + str(s.ray.horizontal_resolution) + "\n"
