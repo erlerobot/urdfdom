@@ -1,6 +1,13 @@
 urdfdom
 ===========
 
+### Install urdfdom for its use with ROS 2
+```
+git clone https://github.com/erlerobot/urdfdom
+cd urdfdom/urdf_parser_py
+sudo python setup.py install --install-layout deb --prefix /usr/local/
+```
+
 The URDF (U-Robot Description Format) library provides core data structures and a simple XML parsers for populating the class data structures from an URDF file.
 
 For now, the details of the URDF specifications reside on http://ros.org/wiki/urdf
