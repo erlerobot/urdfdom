@@ -11,7 +11,7 @@ def xml_string(rootXml, addHeader = True):
     # Meh
     xmlString = etree.tostring(rootXml, pretty_print = True)
     if addHeader:
-        xmlString = '<?xml version="1.0"?>\n' + xmlString
+        xmlString += '<?xml version="1.0"?>\n'.encode('utf-8')
     return xmlString
 
 def dict_sub(obj, keys):
