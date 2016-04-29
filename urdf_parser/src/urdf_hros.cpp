@@ -32,41 +32,68 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* Author: Wim Meeussen */
+/* Author: Alejandro Herrnández */
 
-#ifndef URDF_PARSER_URDF_PARSER_H
-#define URDF_PARSER_URDF_PARSER_H
-
-#include <string>
-#include <map>
+#include <urdf_model/hros.h>
+#include <fstream>
+#include <sstream>
+#include <boost/lexical_cast.hpp>
+#include <algorithm>
 #include <tinyxml.h>
-#include <urdf_model/model.h>
-#include <urdf_model/color.h>
-#include <urdf_world/types.h>
-
-#include "exportdecl.h"
-
-namespace urdf_export_helpers {
-
-URDFDOM_DLLAPI std::string values2str(unsigned int count, const double *values, double (*conv)(double) = NULL);
-URDFDOM_DLLAPI std::string values2str(urdf::Vector3 vec);
-URDFDOM_DLLAPI std::string values2str(urdf::Rotation rot);
-URDFDOM_DLLAPI std::string values2str(urdf::Color c);
-URDFDOM_DLLAPI std::string values2str(double d);
-
-}
+#include <console_bridge/console.h>
 
 namespace urdf{
 
+	bool parseCognition(HROSCognition &cognition, TiXmlElement* config)
+	{
+		cognition.clear();
 
-  URDFDOM_DLLAPI bool addJoint(ModelInterfaceSharedPtr &model, std::string name, std::string parent, std::string child);
-  URDFDOM_DLLAPI bool addLink(ModelInterfaceSharedPtr &model, std::string name);
-  URDFDOM_DLLAPI ModelInterfaceSharedPtr initRoot_baseLink(const std::string &robot_name);
-  URDFDOM_DLLAPI ModelInterfaceSharedPtr parseURDF(const std::string &xml_string);
-  URDFDOM_DLLAPI ModelInterfaceSharedPtr parseURDFFile(const std::string &path);
-  URDFDOM_DLLAPI TiXmlDocument*  exportURDF(ModelInterfaceSharedPtr &model);
-  URDFDOM_DLLAPI TiXmlDocument*  exportURDF(const ModelInterface &model);
-  URDFDOM_DLLAPI bool parsePose(Pose&, TiXmlElement*);
+		// Get Joint Name
+		const char *name = config->Attribute("name");
+		if (!name){
+			CONSOLE_BRIDGE_logError("unnamed joint found");
+			return false;
+		}
+		cognition.name = name;
+
+		// Get Parent Link
+		TiXmlElement *parent_xml = config->FirstChildElement("parent");
+		if (parent_xml){
+		    const char *pname = parent_xml->Attribute("link");
+		    if (!pname){
+		      CONSOLE_BRIDGE_logInform("no parent link name specified for Cognition link [%s]. this might be the root?", cognition.name.c_str());
+		    }else{
+		      cognition.parent_link_name = std::string(pname);
+		    }
+		}
+
+		return true;
+	}
+
+	bool parseCommunication(HROSCommunication &comm, TiXmlElement* config)
+	{
+		comm.clear();
+
+		// Get Joint Name
+		const char *name = config->Attribute("name");
+		if (!name){
+			CONSOLE_BRIDGE_logError("unnamed joint found");
+			return false;
+		}
+		comm.name = name;
+
+		// Get Parent Link
+		TiXmlElement *parent_xml = config->FirstChildElement("parent");
+		if (parent_xml){
+		    const char *pname = parent_xml->Attribute("link");
+		    if (!pname){
+		      CONSOLE_BRIDGE_logInform("no parent link name specified for Cognition link [%s]. this might be the root?", comm.name.c_str());
+		    }else{
+		      comm.parent_link_name = std::string(pname);
+		    }
+		}
+
+		return true;
+	}
+
 }
-
-#endif

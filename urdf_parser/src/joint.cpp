@@ -374,6 +374,23 @@ bool parseJointMimic(JointMimic &jm, TiXmlElement* config)
   return true;
 }
 
+bool addJoint(ModelInterfaceSharedPtr &model,
+              std::string name,
+              std::string parent,
+              std::string child)
+{
+  urdf::JointSharedPtr joint;
+  joint.reset(new urdf::Joint);
+  joint->clear();
+  joint->name = name;
+
+  joint->parent_link_name = std::string(parent);
+  joint->child_link_name = std::string(child);
+  joint->type = Joint::FIXED;
+
+  model->joints_.insert(std::make_pair(joint->name, joint));
+}
+
 bool parseJoint(Joint &joint, TiXmlElement* config)
 {
   joint.clear();

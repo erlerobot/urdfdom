@@ -411,6 +411,16 @@ bool parseCollision(Collision &col, TiXmlElement* config)
   return true;
 }
 
+bool addLink(ModelInterfaceSharedPtr &model, std::string name)
+{
+  urdf::LinkSharedPtr link;
+  link.reset(new urdf::Link);
+  link->clear();
+  link->name = name;
+
+  model->links_.insert(std::make_pair(link->name,link));
+}
+
 bool parseLink(Link &link, TiXmlElement* config)
 {
   

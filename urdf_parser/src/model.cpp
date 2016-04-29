@@ -45,6 +45,45 @@ bool parseMaterial(Material &material, TiXmlElement *config, bool only_name_is_o
 bool parseLink(Link &link, TiXmlElement *config);
 bool parseJoint(Joint &joint, TiXmlElement *config);
 
+ModelInterfaceSharedPtr initRoot_baseLink(const std::string &robot_name)
+{
+  ModelInterfaceSharedPtr model(new ModelInterface);
+  model->clear();
+
+  model->name_ = std::string(robot_name);
+
+  urdf::LinkSharedPtr link;
+  link.reset(new urdf::Link);
+  link->clear();
+  link->name = "base_link";
+
+  model->links_.insert(std::make_pair(link->name,link));
+
+  std::map<std::string, std::string> parent_link_tree;
+  parent_link_tree.clear();
+
+  // building tree: name mapping
+  try{
+    model->initTree(parent_link_tree);
+  }catch(ParseError &e){
+    CONSOLE_BRIDGE_logError("Failed to build tree: %s", e.what());
+    model.reset();
+    return model;
+  }
+
+  // find the root link
+  try{
+     model->initRoot(parent_link_tree);
+  }catch(ParseError &e){
+    CONSOLE_BRIDGE_logError("Failed to find root link: %s", e.what());
+    model.reset();
+    return model;
+  }
+
+  return model;
+
+}
+
 ModelInterfaceSharedPtr  parseURDFFile(const std::string &path)
 {
     std::ifstream stream( path.c_str() );
