@@ -60,7 +60,17 @@ namespace urdf{
 
 
   URDFDOM_DLLAPI bool addJoint(ModelInterfaceSharedPtr &model, std::string name, std::string parent, std::string child);
+  URDFDOM_DLLAPI bool removeJoint(ModelInterfaceSharedPtr &model, std::string name);
+
   URDFDOM_DLLAPI bool addLink(ModelInterfaceSharedPtr &model, std::string name);
+  URDFDOM_DLLAPI bool removeLink(ModelInterfaceSharedPtr &model, std::string name);
+  
+  URDFDOM_DLLAPI bool addCognition(ModelInterfaceSharedPtr &model, std::string name, std::string parent);
+  URDFDOM_DLLAPI bool removeCognition(ModelInterfaceSharedPtr &model, std::string name);
+  
+  URDFDOM_DLLAPI bool addCommunication(ModelInterfaceSharedPtr &model, std::string name, std::string parent);
+  URDFDOM_DLLAPI bool removeCommunication(ModelInterfaceSharedPtr &model, std::string name);
+
   URDFDOM_DLLAPI ModelInterfaceSharedPtr initRoot_baseLink(const std::string &robot_name);
   URDFDOM_DLLAPI ModelInterfaceSharedPtr parseURDF(const std::string &xml_string);
   URDFDOM_DLLAPI ModelInterfaceSharedPtr parseURDFFile(const std::string &path);

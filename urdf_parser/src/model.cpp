@@ -44,6 +44,8 @@ namespace urdf{
 bool parseMaterial(Material &material, TiXmlElement *config, bool only_name_is_ok);
 bool parseLink(Link &link, TiXmlElement *config);
 bool parseJoint(Joint &joint, TiXmlElement *config);
+bool parseCognition(HROSCognition &cognition, TiXmlElement *config);
+bool parseCommunication(HROSCommunication &communication, TiXmlElement *config);
 
 ModelInterfaceSharedPtr initRoot_baseLink(const std::string &robot_name)
 {
@@ -248,6 +250,48 @@ ModelInterfaceSharedPtr  parseURDF(const std::string &xml_string)
     }
   }
 
+  //Get all H-ROS cognition elements
+  for (TiXmlElement* cognition_xml = robot_xml->FirstChildElement("cognition"); cognition_xml; cognition_xml = cognition_xml->NextSiblingElement("joint"))
+  {
+    HROSCognitionSharedPtr cognition;
+    cognition.reset(new HROSCognition);
+    if (parseCognition(*cognition, cognition_xml)){
+      if (model->getCognition(cognition->name)){
+        CONSOLE_BRIDGE_logError("cognition '%s' is not unique.", cognition->name.c_str());
+        model.reset();
+        return model;
+      }else{
+        model->cognitions_.insert(make_pair(cognition->name,cognition));
+        CONSOLE_BRIDGE_logDebug("urdfdom: successfully added a new cognition '%s'", cognition->name.c_str());
+      }
+    }else{
+      CONSOLE_BRIDGE_logError("cogntion xml is not initialized correctly");
+      model.reset();
+      return model;
+    }
+  }
+
+  //Get all H-ROS communication elements
+  for (TiXmlElement* communication_xml = robot_xml->FirstChildElement("communication"); communication_xml; communication_xml = communication_xml->NextSiblingElement("joint"))
+  {
+    HROSCommunicationSharedPtr communication;
+    communication.reset(new HROSCommunication);
+    if (parseCommunication(*communication, communication_xml)){
+      if (model->getCommunication(communication->name)){
+        CONSOLE_BRIDGE_logError("communication '%s' is not unique.", communication->name.c_str());
+        model.reset();
+        return model;
+      }else{
+        model->communications_.insert(make_pair(communication->name,communication));
+        CONSOLE_BRIDGE_logDebug("urdfdom: successfully added a new communication '%s'", communication->name.c_str());
+      }
+    }else{
+      CONSOLE_BRIDGE_logError("communication xml is not initialized correctly");
+      model.reset();
+      return model;
+    }
+  }
+
 
   // every link has children links and joints, but no parents, so we create a
   // local convenience data structure for keeping child->parent relations
@@ -284,6 +328,8 @@ ModelInterfaceSharedPtr  parseURDF(const std::string &xml_string)
 bool exportMaterial(Material &material, TiXmlElement *config);
 bool exportLink(Link &link, TiXmlElement *config);
 bool exportJoint(Joint &joint, TiXmlElement *config);
+bool exportHROSCognition(HROSCognition &cognition, TiXmlElement *config);
+bool exportHROSCommunication(HROSCommunication &comm, TiXmlElement* xml);
 TiXmlDocument*  exportURDF(const ModelInterface &model)
 {
   TiXmlDocument *doc = new TiXmlDocument();
@@ -309,6 +355,18 @@ TiXmlDocument*  exportURDF(const ModelInterface &model)
   {
     CONSOLE_BRIDGE_logDebug("urdfdom: exporting joint [%s]\n",j->second->name.c_str());
     exportJoint(*(j->second), robot);
+  }
+
+  for (std::map<std::string, HROSCognitionSharedPtr>::const_iterator j=model.cognitions_.begin(); j!=model.cognitions_.end(); j++)  
+  {
+    CONSOLE_BRIDGE_logDebug("urdfdom: exporting cognition [%s]\n",j->second->name.c_str());
+    exportHROSCognition(*(j->second), robot);
+  }
+
+  for (std::map<std::string, HROSCommunicationSharedPtr>::const_iterator j=model.communications_.begin(); j!=model.communications_.end(); j++)  
+  {
+    CONSOLE_BRIDGE_logDebug("urdfdom: exporting cognition [%s]\n",j->second->name.c_str());
+    exportHROSCommunication(*(j->second), robot);
   }
 
   return doc;

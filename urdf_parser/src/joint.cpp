@@ -391,6 +391,12 @@ bool addJoint(ModelInterfaceSharedPtr &model,
   model->joints_.insert(std::make_pair(joint->name, joint));
 }
 
+bool addJoint(ModelInterfaceSharedPtr &model,
+              std::string name)
+{
+  model->joints_.erase(name);
+}
+
 bool parseJoint(Joint &joint, TiXmlElement* config)
 {
   joint.clear();

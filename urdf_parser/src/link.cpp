@@ -421,6 +421,11 @@ bool addLink(ModelInterfaceSharedPtr &model, std::string name)
   model->links_.insert(std::make_pair(link->name,link));
 }
 
+bool removeLink(ModelInterfaceSharedPtr &model, std::string name)
+{
+  model->links_.erase(name);
+}
+
 bool parseLink(Link &link, TiXmlElement* config)
 {
   

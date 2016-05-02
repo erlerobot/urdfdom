@@ -34,6 +34,7 @@
 
 /* Author: Alejandro Herrnández */
 
+#include <urdf_parser/urdf_parser.h>
 #include <urdf_model/hros.h>
 #include <fstream>
 #include <sstream>
@@ -70,6 +71,33 @@ namespace urdf{
 		return true;
 	}
 
+	bool exportHROSCognition(HROSCognition &cognition, TiXmlElement* xml)
+	{
+		TiXmlElement * cognition_xml = new TiXmlElement("cognition");
+		cognition_xml->SetAttribute("name", cognition.name);
+		// parent 
+		TiXmlElement * parent_xml = new TiXmlElement("parent");
+		parent_xml->SetAttribute("link", cognition.parent_link_name);
+		cognition_xml->LinkEndChild(parent_xml);
+		xml->LinkEndChild(cognition_xml);
+	}
+
+	bool addCognition(ModelInterfaceSharedPtr &model, std::string name, std::string parent)
+	{
+	  urdf::HROSCognitionSharedPtr cognition;
+	  cognition.reset(new urdf::HROSCognition);
+	  cognition->clear();
+	  cognition->name = name;
+	  cognition->parent_link_name = parent;
+
+	  model->cognitions_.insert(std::make_pair(cognition->name, cognition));
+	}
+
+	bool removeCognition(ModelInterfaceSharedPtr &model, std::string name)
+	{
+		model->cognitions_.erase(name);	
+	}
+
 	bool parseCommunication(HROSCommunication &comm, TiXmlElement* config)
 	{
 		comm.clear();
@@ -96,4 +124,30 @@ namespace urdf{
 		return true;
 	}
 
+	bool exportHROSCommunication(HROSCommunication &comm, TiXmlElement* xml)
+	{
+		TiXmlElement * comm_xml = new TiXmlElement("communication");
+  		comm_xml->SetAttribute("name", comm.name);
+		// parent 
+		TiXmlElement * parent_xml = new TiXmlElement("parent");
+		parent_xml->SetAttribute("link", comm.parent_link_name);
+		comm_xml->LinkEndChild(parent_xml);
+		xml->LinkEndChild(comm_xml);
+	}
+
+	bool addCommunication(ModelInterfaceSharedPtr &model, std::string name, std::string parent)
+	{
+	  urdf::HROSCommunicationSharedPtr comm;
+	  comm.reset(new urdf::HROSCommunication);
+	  comm->clear();
+	  comm->name = name;
+	  comm->parent_link_name = parent;
+
+	  model->communications_.insert(std::make_pair(comm->name, comm));
+	}
+
+	bool removeCommunication(ModelInterfaceSharedPtr &model, std::string name)
+	{
+		model->communications_.erase(name);	
+	}
 }
